@@ -23,16 +23,6 @@ module.exports = {
       image: {
         type: Sequelize.STRING,
       },
-      createdAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
-        field: 'created_at',
-      },
-      updatedAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
-        field: 'updated_at',
-      },
     });
   },
 
