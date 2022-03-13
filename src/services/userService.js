@@ -13,7 +13,7 @@ const create = async ({ displayName, email, password, image }) => {
 
     await User.create({ displayName, email, password, image });
 
-    return tokenGenerator(user);
+    return tokenGenerator({ displayName, email, image });
   } catch (err) {
     console.error(err);
     return { error: err.message };
