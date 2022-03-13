@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const UserService = require('../services/userService');
+const validateJWTMiddleware = require('../middlewares/validateJWTMiddleware');
 
 const router = express.Router();
 
@@ -16,6 +17,19 @@ router.post('/', async (req, res) => {
     if (result.message) return res.status(result.status).json({ message: result.message });
 
     return res.status(201).json({ token: result.token });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error });
+  }
+});
+
+router.get('/', validateJWTMiddleware, async (_req, res) => {
+  try {
+    const users = await UserService.getAll();
+
+    if (users.error) return res.status(500).json({ error: users.error });
+
+    return res.status(200).json(users);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error });
