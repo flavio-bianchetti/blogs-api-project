@@ -1,17 +1,10 @@
-const Joi = require('joi');
 const { User } = require('../models');
 const tokenGenerator = require('../util/auth/tokenGenerator');
-
-const validateSchema = Joi.object({
-  displayName: Joi.string().min(8).required(),
-  email: Joi.string().email().required(),
-  password: Joi.string().length(6).required(),
-  image: Joi.string(),
-});
+const { validateUserSchema } = require('../util/validateSchema');
 
 const create = async ({ displayName, email, password, image }) => {
   try {
-    const { error } = validateSchema.validate({ displayName, email, password, image });
+    const { error } = validateUserSchema.validate({ displayName, email, password, image });
 
     if (error) return { status: 400, message: error.details[0].message };
 
