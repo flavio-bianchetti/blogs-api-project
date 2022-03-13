@@ -21,4 +21,17 @@ router.post('/', validateJWTMiddleware, async (req, res) => {
   }
 });
 
+router.get('/', validateJWTMiddleware, async (_req, res) => {
+  try {
+    const categories = await CategoryService.getAll();
+
+    if (categories.error) return res.status(500).json({ error: categories.error });
+
+    return res.status(200).json(categories);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error });
+  }
+});
+
 module.exports = router;
