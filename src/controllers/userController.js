@@ -36,4 +36,18 @@ router.get('/', validateJWTMiddleware, async (_req, res) => {
   }
 });
 
+router.get('/:id', validateJWTMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await UserService.find(id);
+
+    if (!user) return res.status(404).json({ message: 'User does not exist' });
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error });
+  }
+});
+
 module.exports = router;
