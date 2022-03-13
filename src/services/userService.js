@@ -30,7 +30,18 @@ const getAll = async () => {
   }
 };
 
+const find = async (id) => {
+  try {
+    const user = await User.findByPk(Number(id));
+    return user;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+};
+
 module.exports = {
   create,
   getAll,
+  find,
 };
