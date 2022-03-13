@@ -12,7 +12,12 @@ const validateEmailAndPasswordSchema = Joi.object({
   password: Joi.string().length(6).required(),
 });
 
+const validateNameSchema = Joi.object({
+  name: Joi.string().required(),
+});
+
 module.exports = {
   validateUserSchema,
   validateEmailAndPasswordSchema,
+  validateNameSchema,
 };
