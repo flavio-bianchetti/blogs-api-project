@@ -18,4 +18,6 @@ app.use('/login', routes.loginController);
 
 app.use('/categories', routes.categoryController);
 
+app.use('/post', routes.postController);
+
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
