@@ -16,6 +16,10 @@ const validateNameSchema = Joi.object({
   name: Joi.string().required(),
 });
 
+const validateIdParamsSchema = Joi.object({
+  id: Joi.number().integer().required(),
+});
+
 const validateTitleContentAndCategoryIdsSchema = Joi.object({
   title: Joi.string().required(),
   content: Joi.string().required(),
@@ -28,4 +32,5 @@ module.exports = {
   validateEmailAndPasswordSchema,
   validateNameSchema,
   validateTitleContentAndCategoryIdsSchema,
+  validateIdParamsSchema,
 };
