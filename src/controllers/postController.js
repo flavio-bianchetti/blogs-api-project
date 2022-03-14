@@ -28,4 +28,19 @@ router.post(
   },
 );
 
+router.get('/',
+  validateJWTMiddleware,
+  async (_req, res) => {
+    try {
+      const result = await PostService.getAll();
+
+      if (result.error) return res.status(400).json({ error: result.error });
+
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error });
+    }
+  });
+
 module.exports = router;
