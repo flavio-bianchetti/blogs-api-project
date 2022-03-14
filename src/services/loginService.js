@@ -7,7 +7,7 @@ const create = async ({ email, password }) => {
     const { error } = validateEmailAndPasswordSchema.validate({ email, password });
     if (error) return { status: 400, message: error.details[0].message };
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email, password } });
     if (!user) return { status: 400, message: 'Invalid fields' };
 
     const userInfo = {
