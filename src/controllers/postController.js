@@ -4,6 +4,7 @@ const PostService = require('../services/postService');
 const validateJWTMiddleware = require('../middlewares/validateJWTMiddleware');
 const validatePostSchema = require('../middlewares/validatePostSchema');
 const validatePostCategoryIds = require('../middlewares/validatePostCategoryIds');
+const validateIdParams = require('../middlewares/validateIdParams');
 
 const router = express.Router();
 
@@ -35,6 +36,25 @@ router.get('/',
       const result = await PostService.getAll();
 
       if (result.error) return res.status(400).json({ error: result.error });
+
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error });
+    }
+  });
+
+router.get('/:id',
+  validateJWTMiddleware,
+  validateIdParams,
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await PostService.find(Number(id));
+
+      if (result.error) return res.status(400).json({ error: result.error });
+
+      if (result.message) return res.status(404).json({ message: result.message });
 
       return res.status(200).json(result);
     } catch (error) {
