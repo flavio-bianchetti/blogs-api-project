@@ -16,8 +16,16 @@ const validateNameSchema = Joi.object({
   name: Joi.string().required(),
 });
 
+const validateTitleContentAndCategoryIdsSchema = Joi.object({
+  title: Joi.string().required(),
+  content: Joi.string().required(),
+  userId: Joi.number().integer().required(),
+  categoryIds: Joi.array().items(Joi.number().integer().required()).required(),
+});
+
 module.exports = {
   validateUserSchema,
   validateEmailAndPasswordSchema,
   validateNameSchema,
+  validateTitleContentAndCategoryIdsSchema,
 };
