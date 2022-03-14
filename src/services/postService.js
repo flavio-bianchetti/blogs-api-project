@@ -47,7 +47,30 @@ const getAll = async () => {
   }
 };
 
+const find = async (id) => {
+  try {
+    const post = await BlogPost.findByPk(id);
+
+    if (!post) return { status: 404, message: 'Post does not exist' };
+
+    const result = await BlogPost.findOne({
+      where: { id },
+      include: [{
+        model: User, as: 'user', attributes: ['id', 'displayName', 'email', 'image'],
+      },
+      {
+        model: Category, as: 'categories', through: { attributes: [] },
+      }],
+    });
+    return result;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+};
+
 module.exports = {
   create,
   getAll,
+  find,
 };
