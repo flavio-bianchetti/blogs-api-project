@@ -46,6 +46,22 @@ router.get('/',
     }
   });
 
+router.get('/search',
+  validateJWTMiddleware,
+  async (req, res) => {
+    const { q } = req.query;
+    try {
+      const result = await (!q ? PostService.getAll() : PostService.search(q));
+
+      if (result.error) return res.status(400).json({ error: result.error });
+
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error });
+    }
+  });
+
 router.get('/:id',
   validateJWTMiddleware,
   validateIdParams,
@@ -87,7 +103,7 @@ router.put('/:id',
     }
   });
 
-  router.delete('/:id',
+router.delete('/:id',
   validateJWTMiddleware,
   validateIdParams,
   async (req, res) => {
