@@ -50,4 +50,24 @@ router.get('/:id', validateJWTMiddleware, async (req, res) => {
   }
 });
 
+router.delete(
+  '/me',
+  validateJWTMiddleware,
+  async (req, res) => {
+    try {
+      const { id } = req.user.dataValues;
+      const user = await UserService.exclude(id);
+
+      if (user.error) return res.status(400).json({ error: user.error });
+
+      if (user.message) return res.status(user.status).json({ message: user.message });
+
+      return res.status(204).send();
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error });
+    }
+  },
+);
+
 module.exports = router;
