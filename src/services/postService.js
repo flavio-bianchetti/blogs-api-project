@@ -100,9 +100,31 @@ const update = async ({ postId, title, content, userId }) => {
   }
 };
 
+const exclude = async ({ postId, userId }) => {
+  const t = await sequelize.transaction();
+  try {
+    const post = await BlogPost.findByPk(postId);
+
+    if (!post) return { status: 404, message: 'Post does not exist' };
+
+    if (post.dataValues.userId !== userId) return { status: 401, message: 'Unauthorized user' };
+
+    const result = await BlogPost.destroy({ where: { id: postId }, transaction: t });
+
+    await t.commit();
+
+    return result;
+  } catch (err) {
+    await t.roolback();
+    console.error(err);
+    return { error: err.message };
+  }
+};
+
 module.exports = {
   create,
   getAll,
   find,
   update,
+  exclude,
 };
