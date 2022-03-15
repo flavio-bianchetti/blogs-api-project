@@ -87,4 +87,24 @@ router.put('/:id',
     }
   });
 
+  router.delete('/:id',
+  validateJWTMiddleware,
+  validateIdParams,
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await PostService
+        .exclude({ postId: Number(id), userId: req.user.dataValues.id });
+
+      if (result.error) return res.status(400).json({ error: result.error });
+
+      if (result.message) return res.status(result.status).json({ message: result.message });
+
+      return res.status(204).send();
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error });
+    }
+  });
+
 module.exports = router;
