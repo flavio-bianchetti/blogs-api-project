@@ -4,6 +4,15 @@ const config = require('../config/config');
 
 const sequelize = new Sequelize(config.development);
 
+const findOneResult = async (id) => {
+  const result = await BlogPost.findOne({
+    where: { id },
+    attributes: ['title', 'content', 'userId'],
+    include: [{ model: Category, as: 'categories', through: { attributes: [] } }],
+   });
+   return result;
+};
+
 const create = async ({ title, content, userId, categoryIds }) => {
   const t = await sequelize.transaction();
   try {
@@ -69,8 +78,31 @@ const find = async (id) => {
   }
 };
 
+const update = async ({ postId, title, content, userId }) => {
+  const t = await sequelize.transaction();
+  try {
+    const post = await BlogPost.findByPk(postId);
+
+    if (!post) return { status: 404, message: 'Post does not exist' };
+
+    if (post.dataValues.userId !== userId) return { status: 401, message: 'Unauthorized user' };
+
+    await BlogPost
+      .update({ title, content, updated: new Date() }, { where: { id: postId }, transaction: t });
+
+    await t.commit();
+
+    return findOneResult(postId);
+  } catch (err) {
+    await t.roolback();
+    console.error(err);
+    return { error: err.message };
+  }
+};
+
 module.exports = {
   create,
   getAll,
   find,
+  update,
 };
