@@ -17,18 +17,18 @@ const findOneResult = async (id) => {
 const create = async ({ title, content, userId, categoryIds }) => {
   const t = await sequelize.transaction();
   try {
-    const published = new Date();
-    const updated = new Date();
+    const p = await BlogPost
+      .create({ title, content, userId, published: new Date(), updated: new Date() },
+        { transaction: t });
 
-    const post = await BlogPost.create({ title, content, userId, published, updated },
-      { transaction: t });
-
-    categoryIds.map(async (categoryId) => {
-      await PostCategory.create({ postId: post.id, categoryId }, { transaction: t });
-    });
-
-    await t.commit();
-    return post.dataValues;
+    return Promise.all(categoryIds.map((c) => PostCategory.create({ postId: p.id, categoryId: c },
+      { transaction: t }))).then(() => {
+          t.commit();
+          return p.dataValues; 
+      }).catch(() => {
+          t.rollback();
+          return { error: 'Error creating post' }; 
+      });
   } catch (err) {
     await t.roolback();
     console.error(err);
