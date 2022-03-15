@@ -3,6 +3,7 @@ const { BlogPost, PostCategory, User, Category } = require('../models');
 const config = require('../config/config');
 
 const sequelize = new Sequelize(config.development);
+const { Op } = Sequelize;
 
 const findOneResult = async (id) => {
   const result = await BlogPost.findOne({
@@ -121,10 +122,33 @@ const exclude = async ({ postId, userId }) => {
   }
 };
 
+// solução de busca adaptada daquela encontrada na documentação:
+// https://sequelize.org/v4/manual/tutorial/querying.html#combinations
+const search = async (searchTerm) => {
+  try {
+    const result = await BlogPost.findAll({
+      where: {
+        [Op.or]: [{ title: { [Op.like]: `%${searchTerm}%` } },
+          { content: { [Op.like]: `%${searchTerm}%` } }],
+      },
+      include: [{ model: User, as: 'user', attributes: ['id', 'displayName', 'email', 'image'],
+      },
+      {
+        model: Category, as: 'categories', through: { attributes: [] },
+      }],
+    });
+    return result;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+};
+
 module.exports = {
   create,
   getAll,
   find,
   update,
   exclude,
+  search,
 };
