@@ -5,6 +5,8 @@ const validateJWTMiddleware = require('../middlewares/validateJWTMiddleware');
 const validatePostSchema = require('../middlewares/validatePostSchema');
 const validatePostCategoryIds = require('../middlewares/validatePostCategoryIds');
 const validateIdParams = require('../middlewares/validateIdParams');
+const validateEditedPost = require('../middlewares/validateEditedPost');
+const validateEditedPostCategoryIds = require('../middlewares/validateEditedPostCategoryIds');
 
 const router = express.Router();
 
@@ -55,6 +57,28 @@ router.get('/:id',
       if (result.error) return res.status(400).json({ error: result.error });
 
       if (result.message) return res.status(404).json({ message: result.message });
+
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error });
+    }
+  });
+
+router.put('/:id',
+  validateJWTMiddleware,
+  validateEditedPost,
+  validateEditedPostCategoryIds,
+  async (req, res) => {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    try {
+      const result = await PostService
+        .update({ postId: Number(id), title, content, userId: req.user.dataValues.id });
+
+      if (result.error) return res.status(400).json({ error: result.error });
+
+      if (result.message) return res.status(result.status).json({ message: result.message });
 
       return res.status(200).json(result);
     } catch (error) {
