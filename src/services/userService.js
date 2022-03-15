@@ -40,8 +40,22 @@ const find = async (id) => {
   }
 };
 
+const exclude = async (id) => {
+  try {
+    const user = await User.findByPk(Number(id));
+    if (!user) return { status: 404, message: 'User not found' };
+
+    await User.destroy({ where: { id } });
+    return true;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+};
+
 module.exports = {
   create,
   getAll,
   find,
+  exclude,
 };
