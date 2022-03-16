@@ -40,18 +40,18 @@ const create = async ({ title, content, userId, categoryIds }) => {
   const t = await sequelize.transaction();
   return BlogPost.create({ title, content, userId, published: new Date(), updated: new Date() },
     { transaction: t })
-    .then(async (p) => Promise
+    .then((p) => Promise
       .all(categoryIds.map((c) => PostCategory.create({ postId: p.id, categoryId: c },
         { transaction: t })))
-        .then(async () => {
-          await t.commit();
+        .then(() => {
+          t.commit();
           return p.dataValues; 
-        }).catch(async () => {
-          await t.rollback();
+        }).catch(() => {
+          t.rollback();
           return { error: 'Error creating post' }; 
         }))
-    .catch(async (err) => {
-      await t.rollback();
+    .catch((err) => {
+      t.rollback();
       console.error(err);
       return { error: err.message };
     });
