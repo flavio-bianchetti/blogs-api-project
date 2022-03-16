@@ -14,26 +14,47 @@ const findOneResult = async (id) => {
    return result;
 };
 
+// const create = async ({ title, content, userId, categoryIds }) => {
+//   const t = await sequelize.transaction();
+//   try {
+//     const p = await BlogPost
+//       .create({ title, content, userId, published: new Date(), updated: new Date() },
+//         { transaction: t });
+
+//     return Promise.all(categoryIds.map((c) => PostCategory.create({ postId: p.id, categoryId: c },
+//       { transaction: t }))).then(() => {
+//           t.commit();
+//           return p.dataValues; 
+//       }).catch(() => {
+//           t.rollback();
+//           return { error: 'Error creating post' }; 
+//       });
+//   } catch (err) {
+//     await t.roolback();
+//     console.error(err);
+//     return { error: err.message };
+//   }
+// };
+
 const create = async ({ title, content, userId, categoryIds }) => {
   const t = await sequelize.transaction();
-  try {
-    const p = await BlogPost
-      .create({ title, content, userId, published: new Date(), updated: new Date() },
-        { transaction: t });
-
-    return Promise.all(categoryIds.map((c) => PostCategory.create({ postId: p.id, categoryId: c },
-      { transaction: t }))).then(() => {
-          t.commit();
+  return BlogPost.create({ title, content, userId, published: new Date(), updated: new Date() },
+    { transaction: t })
+    .then(async (p) => Promise
+      .all(categoryIds.map((c) => PostCategory.create({ postId: p.id, categoryId: c },
+        { transaction: t })))
+        .then(async () => {
+          await t.commit();
           return p.dataValues; 
-      }).catch(() => {
-          t.rollback();
+        }).catch(async () => {
+          await t.rollback();
           return { error: 'Error creating post' }; 
-      });
-  } catch (err) {
-    await t.roolback();
-    console.error(err);
-    return { error: err.message };
-  }
+        }))
+    .catch(async (err) => {
+      await t.rollback();
+      console.error(err);
+      return { error: err.message };
+    });
 };
 
 const getAll = async () => {
