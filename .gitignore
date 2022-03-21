@@ -22,3 +22,14 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Trybe files removed
+
+.github/
+.idea/
+.trybe/
+public/
+tests/
+README.md.original
+trybe.yml
+yarn.lock
